@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package uber;
+
+service RideSharing {
+    // Rider sends a ride request
+    rpc RequestRide(RideRequest) returns (RideResponse);
+    
+    // Driver subscribes to ride requests
+    rpc SubscribeRides(stream Driver) returns (stream RideRequest);
+
+    // Rider request for Status
+    rpc GetRideStatus(RiderStatusRequest) returns (RiderStatusResponse);
+
+    // New method for ride status updates
+    rpc SubscribeToRideUpdates(RiderSubscription) returns (stream RideStatusUpdate);
+    
+    // Driver accepts a ride
+    rpc AcceptRide(AcceptRideRequest) returns (AcceptRideResponse);
+    
+    // Driver rejects a ride
+    rpc RejectRide(RejectRideRequest) returns (RejectRideResponse);
+
+    // Driver completes ride
+    rpc CompleteRide(RideCompletionRequest) returns (RideCompletionResponse);
+}
+
+message Location {
+    float latitude = 1;
+    float longitude = 2;
+}
+
+message RideRequest {
+    int32 rider_id = 1;
+    Location location = 2;
+    Location destination = 3;
+}
+
+message RideResponse {
+    int32 ride_id = 1;
+    int32 driver_id = 2;
+    string status = 3;    
+}
+
+message RideRequestWithRideId {
+    int32 rider_id = 1;
+    Location location = 2;
+    Location destination = 3;
+    int32 ride_id = 4;
+}
+
+message RiderSubscription {
+    int32 rider_id = 1;
+}
+
+message RiderStatusRequest {
+    int32 ride_id = 1;
+}
+
+message RiderStatusResponse {
+    int32 ride_id = 1;
+    string status = 2;
+}
+
+message RideStatusUpdate {
+    int32 ride_id = 1;
+    string status = 2;
+    string message = 3;
+}
+
+message AcceptRideRequest {
+    int32 ride_id  = 1;
+    int32 driver_id = 2;
+}
+
+message AcceptRideResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message RejectRideRequest {
+    int32 ride_id = 1;
+    int32 driver_id = 2;
+}
+
+message RejectRideResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message RideCompletionRequest {
+    int32 ride_id = 1;
+    int32 driver_id = 2;
+}
+
+message RideCompletionResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+// Additional messages for driver subscription
+message Driver {
+    int32 driver_id = 1;
+    string status = 2;
+    Location current_location = 3;
+}
